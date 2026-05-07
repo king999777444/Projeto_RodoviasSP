@@ -22,7 +22,7 @@ A gestão de tráfego em São Paulo sofre com a **fragmentação de dados**. Ór
 Estamos atualmente refatorando o sistema de scripts procedurais para uma arquitetura **Orientada a Objetos (OOP)**, garantindo escalabilidade e modularidade:
 
 ```bash
-.
+
 ├── core/                   # Classes base do sistema
 │   ├── extractor.py        # Abstração para leitura de DER/ARTESP/PNCT
 │   ├── geocoder.py         # Lógica de Referenciamento Linear
@@ -33,3 +33,27 @@ Estamos atualmente refatorando o sistema de scripts procedurais para uma arquite
 │   └── output/             # GeoPackages e Shapefiles consolidados
 ├── notebooks/              # Análises exploratórias e validações
 └── main.py                 # Orquestrador do Pipeline
+````
+🚀 Como Executar (Em breve)
+
+    Nota: O projeto está em fase de refatoração para a versão 2.0 (POO).
+
+    Clone o repositório:
+    git clone https://github.com/seu-usuario/trafego-sp-geo.git
+
+    Instale as dependências:
+    pip install -r requirements.txt
+
+    Execute o processamento:
+    python main.py --ano 2024 --fonte all
+
+
+👨‍🔬 Autor
+
+Lucas Pereira Garijo
+
+    🎓 Estudante de Engenharia Elétrica - Poli-USP
+
+    🛡️ Diretor Acadêmico e de Cybersecurity - IMESEC
+
+    🧪 Pesquisador em Forense Digital e Segurança da Informação
