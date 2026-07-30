@@ -1,59 +1,96 @@
-# 🛣️ Pipeline Geoespacial de Tráfego Rodoviário (SP)
+# 🛣️ Pipeline Geoespacial de Tráfego - São Paulo
 
-[![Python](https://img.shields.io/badge/Python-3.12+-blue?logo=python&logoColor=white)](https://www.python.org/)
-[![GeoPandas](https://img.shields.io/badge/GeoPandas-Spatial_Data-1572B6?logo=pandas&logoColor=white)](https://geopandas.org/)
-[![Linux](https://img.shields.io/badge/OS-Fedora%20/%20Arch-0B2C4A?logo=fedora&logoColor=white)](https://getfedora.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Status: Refactoring](https://img.shields.io/badge/Status-Refatorando_para_POO-orange?style=flat-square)]()
+![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)
+![GeoPandas](https://img.shields.io/badge/GeoPandas-Spatial_Analysis-brightgreen?logo=geopandas)
+![NVIDIA RAPIDS](https://img.shields.io/badge/NVIDIA_RAPIDS-cuDF_GPU-76B900?logo=nvidia&logoColor=white)
+![Parquet](https://img.shields.io/badge/Apache_Parquet-Big_Data-orange?logo=apache)
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
-Este projeto é uma plataforma de **Engenharia de Dados e Inteligência Geográfica** desenvolvida para consolidar, auditar e espacializar o histórico de tráfego rodoviário do Estado de São Paulo (2013-2025). O objetivo central é prover uma base de dados unificada e georreferenciada para simulações de impactos operacionais e financeiros na transição para o modelo de pedágio **Free-Flow**.
+Sistema avançado de Engenharia de Dados Espaciais focado na ingestão, auditoria e unificação de grandes volumes de dados de tráfego rodoviário do Estado de São Paulo. O projeto cruza dados históricos do **DER-SP**, **ARTESP** e **PNCT (DNIT)**, aplicando referenciamento linear e análise de redundância geográfica.
 
-## 🎯 Objetivos do Projeto
+Este projeto foi desenhado com uma arquitetura Orientada a Objetos (POO) e otimizado para execução em servidores Linux de alta performance, utilizando paralelismo de CPU e aceleração de GPU.
 
-A gestão de tráfego em São Paulo sofre com a **fragmentação de dados**. Órgãos diferentes (DER-SP, ARTESP e PNCT) utilizam padrões distintos. Este pipeline resolve esse "gap" através de:
+---
 
-- **Unificação de Fontes Heterogêneas:** Integração de planilhas complexas do DER, ARTESP e PNCT (Governo Federal).
-- **Referenciamento Linear:** Conversão de marcos quilométricos em coordenadas geográficas exatas (`Lat/Long`) utilizando a malha rodoviária oficial.
-- **Análise Multitemporal:** Série histórica do VMDa (Volume Médio Diário Anual) segmentada por categorias veiculares.
-- **Garantia de Qualidade (QA):** Scripts de auditoria forense para detectar anomalias em 117 colunas de dados.
+## ✨ Arquitetura e Funcionalidades
 
-## 🏗️ Arquitetura do Sistema (Roadmap POO)
+*   **Ingestão Orientada a Objetos:** Classes extratoras padronizadas (`BaseExtractor`, `DERExtractor`, etc.) que aplicam *downcasting* dinâmico de tipos (ex: `float64` para `float32` ou `category`) para otimização massiva de memória RAM.
+*   **Orquestração e Paralelismo:** Uso de `ProcessPoolExecutor` para processamento concorrente de múltiplos arquivos e bases de dados, bypassando o GIL (Global Interpreter Lock) do Python.
+*   **Aceleração via GPU (NVIDIA RAPIDS):** Implementação de *Fallback Pattern* que detecta automaticamente a presença de hardware NVIDIA no cluster e converte DataFrames Pandas para `cuDF`, acelerando operações matemáticas na VRAM.
+*   **Auditoria Geográfica (Spatial Matching):** Algoritmos de intersecção espacial (`sjoin`) baseados no motor C++ `pyogrio` e `shapely`. Identifica sobreposições e redundâncias de infraestrutura de contagem de tráfego no mesmo trecho geométrico e ano.
+*   **Quality Assurance (QA) Automatizado:** Classe de *Self-Healing* que detecta marcos quilométricos absurdos, anomalias de formatação e remove duplicatas temporais antes da injeção no banco de dados.
 
-Estamos atualmente refatorando o sistema de scripts procedurais para uma arquitetura **Orientada a Objetos (OOP)**, garantindo escalabilidade e modularidade:
+---
 
-```bash
+## 📂 Estrutura do Projeto
 
-├── core/                   # Classes base do sistema
-│   ├── extractor.py        # Abstração para leitura de DER/ARTESP/PNCT
-│   ├── geocoder.py         # Lógica de Referenciamento Linear
-│   └── validator.py        # Motor de auditoria e consistência
-├── data/
-│   ├── input/              # Bases brutas (CSV/XLSX)
-│   ├── geometry/           # Shapefiles da malha rodoviária oficial
-│   └── output/             # GeoPackages e Shapefiles consolidados
-├── notebooks/              # Análises exploratórias e validações
-└── main.py                 # Orquestrador do Pipeline
-````
-🚀 Como Executar (Em breve)
+A organização dos diretórios segue os padrões da indústria para Engenharia de Dados:
 
-    Nota: O projeto está em fase de refatoração para a versão 2.0 (POO).
+```text
+trafego-sp-geo/
+├── core/                   # Regras de Negócio e Motores
+│   ├── extractor.py        # Módulos de extração (DER, ARTESP, PNCT)
+│   ├── orchestrator.py     # Gerenciamento de Threads e GPU
+│   ├── geocoder.py         # Referenciamento Linear Espacial
+│   ├── spatial_matcher.py  # Algoritmo de cruzamento de radares/trechos
+│   └── validator.py        # Motor de auditoria (QA)
+├── utils/                  # Ferramentas de Suporte
+│   ├── hardware.py         # Autodetect de CPU/GPU em servidores
+│   └── logger.py           # Registro de anomalias detectadas
+├── Auditoria_scripts/      # Scripts standalone para validação rápida
+│   └── auditoria_shp.py    # Gera análises anuais de sobreposição
+├── data/                   # (Ignorado no Git)
+│   ├── raw/                # Planilhas brutas (.xlsx, .csv)
+│   ├── geometry/           # Malhas rodoviárias oficiais (.shp)
+│   └── processed/          # Arquivos consolidados (.parquet, .gpkg)
+```
 
-    Clone o repositório:
-    git clone https://github.com/seu-usuario/trafego-sp-geo.git
+🚀 Como Executar
+1. Ambiente Padrão (CPU)
 
-    Instale as dependências:
-    pip install -r requirements.txt
+Para rodar localmente utilizando múltiplos núcleos do processador:
 
-    Execute o processamento:
-    python main.py --ano 2024 --fonte all
+# Criação do ambiente virtual
+python -m venv venv
+
+# Ativação (Windows)
+.\venv\Scripts\activate
+# Ativação (Linux/Mac)
+source venv/bin/activate
+
+# Instalação de dependências
+pip install -r requirements.txt
+
+# Executar o pipeline de auditoria espacial
+python Auditoria_scripts/auditoria_shp.py
 
 
-👨‍🔬 Autor
+2. Ambiente de Alta Performance (Cluster Linux / GPU)
 
-Lucas Pereira Garijo
+Para implantação em servidores de pesquisa com acesso a placas de vídeo NVIDIA:
 
-    🎓 Estudante de Engenharia Elétrica - Poli-USP
+# Criação de ambiente Conda isolado com RAPIDS
+conda create -n trafego_gpu -c rapidsai -c conda-forge -c nvidia cudf=24.02 python=3.12 cudatoolkit=12.0
+conda activate trafego_gpu
 
-    🛡️ Diretor Acadêmico e de Cybersecurity - IMESEC
+# Instalação das dependências espaciais
+pip install geopandas shapely pyogrio openpyxl
 
-    🧪 Pesquisador em Forense Digital e Segurança da Informação
+🗺️ Formatos de Saída Suportados
+
+O pipeline é agnóstico em relação à exportação, priorizando formatos de alta compressão e leitura para ciência de dados e SIGs (Sistemas de Informação Geográfica):
+
+    .parquet: Para consumo rápido em modelos de Machine Learning.
+
+    .gpkg (GeoPackage): Novo padrão da OGC para armazenamento espacial moderno.
+
+    .shp (Shapefiles Anuais): Relatórios espaciais fatiados cronologicamente para fácil visualização no QGIS ou ArcGIS.
+
+    .xlsx: Tabelas gerenciais formatadas para leitura humana e relatórios executivos.
+
+👨‍💻 Autor e Pesquisa
+
+Este projeto faz parte de iniciativas de pesquisa acadêmica em engenharia e infraestrutura, focadas na modernização da análise de dados do sistema rodoviário. Ferramentas construídas com rigor técnico para transformar dados brutos em inteligência geográfica auditável.
+├── main.py                 # Ponto de entrada do pipeline unificado
+├── requirements.txt        # Dependências do projeto
+└── README.md               # Documentação
