@@ -49,7 +49,7 @@ trafego-sp-geo/
 1. Ambiente Padrão (CPU)
 
 Para rodar localmente utilizando múltiplos núcleos do processador:
-
+```
 # Criação do ambiente virtual
 python -m venv venv
 
@@ -63,19 +63,19 @@ pip install -r requirements.txt
 
 # Executar o pipeline de auditoria espacial
 python Auditoria_scripts/auditoria_shp.py
-
+```
 
 2. Ambiente de Alta Performance (Cluster Linux / GPU)
 
 Para implantação em servidores de pesquisa com acesso a placas de vídeo NVIDIA:
-
+```
 # Criação de ambiente Conda isolado com RAPIDS
 conda create -n trafego_gpu -c rapidsai -c conda-forge -c nvidia cudf=24.02 python=3.12 cudatoolkit=12.0
 conda activate trafego_gpu
 
 # Instalação das dependências espaciais
 pip install geopandas shapely pyogrio openpyxl
-
+```
 🗺️ Formatos de Saída Suportados
 
 O pipeline é agnóstico em relação à exportação, priorizando formatos de alta compressão e leitura para ciência de dados e SIGs (Sistemas de Informação Geográfica):
