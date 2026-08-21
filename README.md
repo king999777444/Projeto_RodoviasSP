@@ -94,3 +94,5 @@ Este projeto faz parte de iniciativas de pesquisa acadêmica em engenharia e inf
 ├── main.py                 # Ponto de entrada do pipeline unificado
 ├── requirements.txt        # Dependências do projeto
 └── README.md               # Documentação
+
+Este projeto foi financiado com bolsa de Iniciação Científica pela Fundação de Apoio à Universidade de São Paulo (FUSP)
