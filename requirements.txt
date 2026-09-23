@@ -1,0 +1,21 @@
+# Manipulação de Dados e I/O
+pandas>=2.1.0
+numpy>=1.24.0
+pyarrow>=14.0.0        # Essencial para exportar a base consolidada para .parquet
+openpyxl>=3.1.2        # Motor necessário para o Pandas ler os .xlsx da ARTESP e DER
+
+# Geoprocessamento e Referenciamento Linear
+geopandas>=0.14.0
+shapely>=2.0.0         # Faz a matemática de interpolação dos marcos quilométricos
+pyogrio>=0.7.0         # Motor C++ ultra-rápido para ler Shapefiles e gravar GeoPackages
+
+# ---------------------------------------------------------
+# NOTA PARA O SERVIDOR DO IME (Aceleração GPU / RAPIDS):
+# ---------------------------------------------------------
+# A biblioteca 'cudf' (NVIDIA RAPIDS) não se instala via pip normal.
+# Quando acederes ao cluster via SSH, deves instalar o RAPIDS usando o Conda:
+#
+# Comando a rodar no terminal do Linux:
+# conda create -n trafego_gpu -c rapidsai -c conda-forge -c nvidia cudf=24.02 python=3.12 cudatoolkit=12.0
+# conda activate trafego_gpu
+# pip install -r requirements.txt
